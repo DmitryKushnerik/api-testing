@@ -1,5 +1,6 @@
 package tests;
 
+import io.restassured.response.Response;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import steps.RateSteps;
@@ -24,13 +25,15 @@ public class RateTest {
     public void checkRate(String currency, int scale) {
         String url = "https://kurs.onliner.by/sdapi/kurs/api/bestrate?currency=%S&type=nbrb".formatted(currency);
         String[] keys = {"amount", "grow", "scale", "banks"};
-        String response = steps.getRatesResponse(url);
-        validator.validateSchema(url);
-        validator.validateHeader(url);
+        Response response = steps.getRates(url);
+        steps.logResponse(response);
+        validator.validateStatusCode(response, 200);
+        validator.validateSchema(response);
+        validator.validateHeader(response);
         for (String key : keys)
-            validator.validateKey(url, key);
-        validator.validateGrow(url);
-        validator.validateScale(url, scale);
-        validator.validateScaleRegex(response);
+            validator.validateKey(response, key);
+        validator.validateGrow(response);
+        validator.validateScale(response, scale);
+        validator.validateScaleRegex(steps.getRatesAsString(response));
     }
 }

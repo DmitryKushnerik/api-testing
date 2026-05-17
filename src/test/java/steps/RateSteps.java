@@ -1,17 +1,27 @@
 package steps;
 
+import io.restassured.response.Response;
+
 import static io.restassured.RestAssured.given;
 
 public class RateSteps {
-    public String getRatesResponse(String url) {
+    public Response getRates(String url) {
         return given()
                 .log().all()
                 .when()
-                .get(url)
+                .get(url);
+    }
+
+    public String getRatesAsString(Response response) {
+        return response
                 .then()
-                .log().all()
-                .statusCode(200)
                 .extract()
                 .asString();
+    }
+
+    public void logResponse(Response response) {
+        response
+                .then()
+                .log().all();
     }
 }

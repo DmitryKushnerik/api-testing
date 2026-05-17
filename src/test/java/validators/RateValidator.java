@@ -1,50 +1,47 @@
 package validators;
 
+import io.restassured.response.Response;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.restassured.RestAssured.given;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 import static org.testng.AssertJUnit.assertTrue;
 
 public class RateValidator {
-    public void validateSchema(String url) {
-        given()
-                .when()
-                .get(url)
+    public void validateStatusCode(Response response, int code) {
+        response
+                .then()
+                .statusCode(code);
+    }
+
+    public void validateSchema(Response response) {
+        response
                 .then()
                 .body(matchesJsonSchemaInClasspath("schemas/rate_schema.json"));
     }
 
-    public void validateHeader(String url) {
-        given()
-                .when()
-                .get(url)
+    public void validateHeader(Response response) {
+        response
                 .then()
                 .header("Content-type", containsString("application/json"));
     }
 
-    public void validateKey(String url, String key) {
-        given()
-                .when()
-                .get(url)
+    public void validateKey(Response response, String key) {
+        response
                 .then()
                 .body("$", hasKey(key));
     }
 
-    public void validateScale(String url, int scale) {
-        given()
-                .when()
-                .get(url)
+    public void validateScale(Response response, int scale) {
+        response
                 .then()
                 .body("scale", equalTo(scale));
     }
 
-    public void validateGrow(String url) {
-        given()
-                .when()
-                .get(url)
+    public void validateGrow(Response response) {
+        response
                 .then()
                 .body("grow", oneOf(-1, 0, 1));
     }
